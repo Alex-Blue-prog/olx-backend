@@ -280,6 +280,7 @@ module.exports = {
 
         await Ad.findByIdAndUpdate(id, {$set: updates});
 
+
         if(req.files && req.files.img) {
             const adI = await Ad.findById(id);
 
@@ -308,5 +309,5 @@ module.exports = {
         }
 
         res.json({error: ''});
-    },
+    }
 };

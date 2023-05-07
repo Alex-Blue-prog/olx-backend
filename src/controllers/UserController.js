@@ -22,8 +22,14 @@ module.exports = {
         let adList = [];
         for(let i in ads) {
             const cat = await Category.findById(ads[i].category);
-            adList.push({ ...ads[i], category: cat.slug });
+            adList.push({ ...ads[i]._doc, category: cat.name });
+
+
+            adList[i].images.forEach(value => {
+                value.url = `${process.env.BASE}/media/${value.url}`;
+            });
         }
+
 
         res.json({
             name: user.name,
@@ -46,25 +52,35 @@ module.exports = {
             updates.name = data.name;
         }
 
+
         if(data.email) {
+            console.log(data);
             const emailCheck = await User.findOne({email: data.email});
             if(emailCheck) {
-                res.json({error: 'E-mail já existente!'});
+                res.json({
+                    error: {email:{msg: 'E-mail já existe!'}}
+                });
+                
                 return;
             }
             updates.email = data.email;
         }
 
+
         if(data.state) {
             if(mongoose.Types.ObjectId.isValid(data.state)) {
                 const stateCheck = await State.findById(data.state);
                 if(!stateCheck) {
-                    res.json({error: 'Estado não existe'});
+                    res.json({
+                        error: {state:{msg: 'Estado não existe'}}
+                    });
                     return;
                 }
                 updates.state = data.state;
             } else {
-                res.json({error: 'Código de estado inválido'});
+                res.json({
+                    error: {email:{state: 'Código de estado invalido'}}
+                });
                 return;
             }
         }
